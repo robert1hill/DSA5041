@@ -1,0 +1,16 @@
+---
+title: "Project First Installment"
+author: "Robert Hill"
+date: "4/8/2022"
+output: html_document
+---
+
+
+##Creating constr
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+##Testing constr
