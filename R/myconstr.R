@@ -1,16 +1,18 @@
 #' @title A constructor function for t tests
 #'
-#' TODO: Brief description
+#' @description This function takes in two vectors of data and an alpha value, and
+#' it provides the confidence interval and p-value from a standard t-test.
+#' NOTE: as the function is now, it assumes the variances of the two vectors of data are the same.
 #'
 #' @param x #vector of data
 #' @param y #vector of data
 #' @param alpha #the alpha, a value between 0-1
 #'
-#' @return A named list
+#' @return A named list with a dataframe of the data, confidence interval, and p-value
 #' @export
 #'
 #' @examples
-#'
+#'x <- rnorm(30,5,2); y <- rnorm(30,3,2)
 myconstr=function(x, y, alpha=0.05){
 
   #declaring vectors for data and the source "v". Code from the example.
