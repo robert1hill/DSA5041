@@ -1,29 +1,34 @@
-#' Square function
+#' @title A constructor function for t tests
 #'
 #' TODO: Brief description
 #'
-#' @param x #comment detailing what x is
-#' @param y #comment detailing what y is
-#' @param alpha #comment detailing what alpha is
+#' @param x #vector of data
+#' @param y #vector of data
+#' @param alpha #the alpha, a value between 0-1
 #'
 #' @return A named list
 #' @export
 #'
 #' @examples
 #'
-myconstr=function(x, y, alpha){ #Do I want to put in any default values?
+myconstr=function(x, y, alpha=0.05){
+
+  #declaring vectors for data and the source "v". Code from the example.
+  data <- vector(mode = "numeric", length = length(x) + length(y))
+  v <- vector(mode = "list", length = length(data))
 
   #creating dataframe
+  data <- c(x,y)
+  v <- rep(c("x","y"), c(length(x),length(y))) # Creation of qual var
+  df = data.frame("data" = data, "v" = v)
 
-  #TODO create code that checks the vector lengths and appends NA to the end of the shorter
-  data = data.frame(x, y)
+  #running ttest
 
-  #calculating confidence interval
+  tt<-t.test(x,y,var.equal = TRUE, conf.level=1-alpha)
 
-  #calculating pvalue
 
   #returning a list
-  returnObject = list('data' = data, 'alpha' = alpha, 'CONFIDENCE INTERVAL' = 'CONFIDENCE INTERVAL', 'pvalue'='pvalue')
+  returnObject = list('data' = df, 'alpha' = alpha, 'ConfidenceInt' = 1-alpha, 'pvalue'=tt$p.value)
   class(returnObject) = "Rttest"
   returnObject
 }
@@ -48,6 +53,7 @@ alpha <- 0.05
 obj <- myconstr(x=x, y=y, alpha=alpha)
 class(obj)
 print(obj)
+
 
 
 
