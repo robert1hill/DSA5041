@@ -15,13 +15,30 @@
 #'x <- rnorm(30,5,2); y <- rnorm(30,3,2)
 myconstr=function(x, y, alpha=0.05){
 
+  ###conditionals to check arguments
+  #confirming x is a numeric vector
+  xClass = class(x)
+  if(xClass != "numeric") {
+    stop(paste0("The input x is of class ", xClass, " but must be a vector!!"))
+  }
+  #confirming y is a numeric vector
+  yClass = class(y)
+  if(yClass != "numeric") {
+    stop(paste0("The input y is of class ", xClass, " but must be a vector!!"))
+  }
+  #confirming alpha is between 0-1
+  if(alpha < 0 || alpha > 1) {
+    stop(paste0("The input alpha is out of bounds. Input a value for alpha between 0 and 1"))
+  }
+
+
   #declaring vectors for data and the source "v". Code from the example.
   data <- vector(mode = "numeric", length = length(x) + length(y))
   v <- vector(mode = "list", length = length(data))
 
   #creating dataframe
   data <- c(x,y)
-  v <- rep(c("x","y"), c(length(x),length(y))) # Creation of qual var
+  v <- rep(c("x","y"), c(length(x),length(y)))
   df = data.frame("data" = data, "v" = v)
 
   #running ttest
@@ -57,7 +74,8 @@ class(obj)
 print(obj)
 
 
-
-
-
+#this can handle errors
+#library(purrr)
+#safeConstr <- safely(myconstr)
+#safeConstr
 
