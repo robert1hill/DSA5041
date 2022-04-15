@@ -1,0 +1,134 @@
+---
+title: "DSA5041 Project Vignette"
+author: "Robert Hill"
+date: "4/15/2022"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{DSAProjVig}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+The package `DSA5041PROJ1` runs the Student's T-Test on two populations to determine if the means are the same.
+
+# Functions
+
+TODO: Explain all functions once they are created.
+
+## OOP
+
+In this package we will be using `S3` OOP -- which is the commonly used object oriented form in R package making.
+
+See <https://adv-r.hadley.nz/s3.html> for more information.
+
+## Documentation
+
+There are two forms of documentation
+  
+  1. Function specific using Roxygen.
+  2. Vignette -- long form.
+  
+# Constructor
+
+The first function is `myconstr`. It runs a t-test and produces a list of useful information, including the population data, confidence interval, and the p-value.
+
+```{r}
+myconstr=function(x, y, alpha=0.05){
+
+  ###conditionals to check arguments
+  #confirming x is a numeric vector
+  xClass = class(x)
+  if(xClass != "numeric") {
+    stop(paste0("The input x is of class ", xClass, " but must be a vector!!"))
+  }
+  #confirming y is a numeric vector
+  yClass = class(y)
+  if(yClass != "numeric") {
+    stop(paste0("The input y is of class ", xClass, " but must be a vector!!"))
+  }
+  #confirming alpha is between 0-1
+  if(alpha < 0 || alpha > 1) {
+    stop(paste0("The input alpha is out of bounds. Input a value for alpha between 0 and 1"))
+  }
+
+
+  #declaring vectors for data and the source "v". Code from the example.
+  data <- vector(mode = "numeric", length = length(x) + length(y))
+  v <- vector(mode = "list", length = length(data))
+
+  #creating dataframe
+  data <- c(x,y)
+  v <- rep(c("x","y"), c(length(x),length(y)))
+  df = data.frame("data" = data, "v" = v)
+
+  #running ttest
+
+  tt<-t.test(x,y,var.equal = TRUE, conf.level=1-alpha)
+
+
+  #returning a list
+  returnObject = list('data' = df, 'alpha' = alpha, 'ConfidenceInt' = 1-alpha, 'pvalue'=tt$p.value)
+  class(returnObject) = "Rttest"
+  returnObject
+}
+```
+
+Below is an example of the `myconstr` function running:
+
+```{r}
+set.seed(21)
+x <- rnorm(30,5,2)
+set.seed(23)
+y <- rnorm(30,3,2)
+alpha <- 0.05
+
+obj <- myconstr(x=x, y=y, alpha=alpha)
+class(obj)
+
+```
+
+Notice that the output is of class "Rttest"
+
+The function returns a list of components:
+
+```{r}
+obj
+```
+
+The components can then be operated on by an appropriate method attached to a generic.
+
+# Method
+
+The method is attached to the generic finction `plot()`
+
+```{r, eval=FALSE}
+#plot.mytt()
+```
+
+
+
+We can call it by simply invoking the `plot()` function
+
+```{r}
+#plot(out)
+```
+
+
+
+# Shiny server
+
+These two functions have been placed into a shiny app and can be invoked using 
+
+```{r,eval = FALSE}
+#shinyhist()
+```
+

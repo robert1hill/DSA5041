@@ -11,6 +11,8 @@
 #' @return A named list with a dataframe of the data, confidence interval, and p-value
 #' @export
 #'
+#' @importFrom stats  t.test
+#'
 #' @examples
 #'x <- rnorm(30,5,2); y <- rnorm(30,3,2)
 myconstr=function(x, y, alpha=0.05){
@@ -52,12 +54,33 @@ myconstr=function(x, y, alpha=0.05){
   returnObject
 }
 
+#' @title A print method for Rttest objects
+#'
+#' @description This function prints a Rttest object.
+#'
+#' @param x #An object of class Rttest. This is a list with data, confidence interval, and pvalue
+#' @param ... #allows the function to work if more than one argument is submitted.
+#'
+#' @return A formatted table of the input data with a note at the bottom with the confidence interval and the p-value
+#'
+#' @importFrom knitr kable
+#' @importFrom kableExtra kable_styling %>% footnote
+#' @export
+#'
+#'
+print.Rttest <- function(x, ...) {
 
+  #though it shouldn't ever happen, the method confirms that an Rttest object is given as the argument
+  stopifnot(class(x) == "Rttest")
 
+  #generating table kable styled
+  printTable <- kable(x$data, caption = "Input Data") %>%
+    kable_styling("hover", full_width = F) %>%
+    footnote(general = paste("Confidence Interval: ", x$ConfidenceInt, '\n',
+                             "p-value: ", x$pvalue))
+  printTable
 
-
-
-
+}
 
 
 

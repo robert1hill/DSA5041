@@ -249,6 +249,15 @@ myconstr=function(x, y, alpha=0.05){
   class(returnObject) = &quot;Rttest&quot;
   returnObject
 }</code></pre>
+<div id="methods" class="section level2">
+<h2>Methods</h2>
+<div id="print" class="section level3">
+<h3>Print</h3>
+<pre class="r"><code>print.Rttest &lt;- function(RttestObj) {
+  library(kableExtra)
+  
+  kable(RttestObj$data)
+}</code></pre>
 <p>##Testing constr</p>
 <pre class="r"><code>set.seed(21)
 x &lt;- rnorm(30,5,2)
@@ -260,80 +269,503 @@ obj &lt;- myconstr(x=x, y=y, alpha=alpha)
 class(obj)</code></pre>
 <pre><code>## [1] &quot;Rttest&quot;</code></pre>
 <pre class="r"><code>print(obj)</code></pre>
-<pre><code>## $data
-##         data v
-## 1  6.5860263 x
-## 2  6.0445025 x
-## 3  8.4924445 x
-## 4  2.4573278 x
-## 5  9.3947791 x
-## 6  5.8662616 x
-## 7  1.8596007 x
-## 8  3.1301887 x
-## 9  5.1269867 x
-## 10 4.9952133 x
-## 11 0.4464375 x
-## 12 6.5148245 x
-## 13 3.9031889 x
-## 14 5.3450990 x
-## 15 6.1257061 x
-## 16 8.0236359 x
-## 17 6.3180503 x
-## 18 7.2440561 x
-## 19 3.4307173 x
-## 20 4.1486154 x
-## 21 5.7859952 x
-## 22 5.0735143 x
-## 23 2.9358327 x
-## 24 2.4702771 x
-## 25 4.5460694 x
-## 26 6.4911786 x
-## 27 5.6656384 x
-## 28 2.7519191 x
-## 29 3.5877384 x
-## 30 3.5449123 x
-## 31 3.3864247 y
-## 32 2.1306358 y
-## 33 4.8265342 y
-## 34 6.5867762 y
-## 35 4.9932102 y
-## 36 5.2149810 y
-## 37 2.4438274 y
-## 38 5.0384110 y
-## 39 3.0908744 y
-## 40 6.1515592 y
-## 41 3.4365769 y
-## 42 0.9069293 y
-## 43 2.4226227 y
-## 44 3.9631006 y
-## 45 0.5672471 y
-## 46 3.6162738 y
-## 47 1.9596434 y
-## 48 2.1153724 y
-## 49 1.8013744 y
-## 50 5.5891557 y
-## 51 4.6707825 y
-## 52 1.8679698 y
-## 53 4.5768387 y
-## 54 0.6681413 y
-## 55 1.9383600 y
-## 56 2.9978825 y
-## 57 1.9748753 y
-## 58 5.4857350 y
-## 59 1.6788343 y
-## 60 3.3332484 y
-## 
-## $alpha
-## [1] 0.05
-## 
-## $ConfidenceInt
-## [1] 0.95
-## 
-## $pvalue
-## [1] 0.001414586
-## 
-## attr(,&quot;class&quot;)
-## [1] &quot;Rttest&quot;</code></pre>
+<pre><code>## Warning: package &#39;kableExtra&#39; was built under R version 4.0.5</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align:right;">
+data
+</th>
+<th style="text-align:left;">
+v
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+6.5860263
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6.0445025
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8.4924445
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2.4573278
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9.3947791
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5.8662616
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1.8596007
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3.1301887
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5.1269867
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4.9952133
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.4464375
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6.5148245
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3.9031889
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5.3450990
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6.1257061
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8.0236359
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6.3180503
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7.2440561
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3.4307173
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4.1486154
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5.7859952
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5.0735143
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2.9358327
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2.4702771
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4.5460694
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6.4911786
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5.6656384
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2.7519191
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3.5877384
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3.5449123
+</td>
+<td style="text-align:left;">
+x
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3.3864247
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2.1306358
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4.8265342
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6.5867762
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4.9932102
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5.2149810
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2.4438274
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5.0384110
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3.0908744
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6.1515592
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3.4365769
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.9069293
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2.4226227
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3.9631006
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.5672471
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3.6162738
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1.9596434
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2.1153724
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1.8013744
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5.5891557
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4.6707825
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1.8679698
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4.5768387
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.6681413
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1.9383600
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2.9978825
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1.9748753
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5.4857350
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1.6788343
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3.3332484
+</td>
+<td style="text-align:left;">
+y
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 
 
 

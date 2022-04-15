@@ -67,6 +67,39 @@ myconstr=function(x, y, alpha=0.05){
 ```
 
 
+## Methods
+
+### Print
+```{r}
+#' @title A constructor function for t tests
+#'
+#' @description This function prints a Rttest object.
+#'
+#' @param RttestObj #An object of class Rttest. This is a list with data, confidence interval, and pvalue
+#'
+#' @return A formatted table of the input data
+#' @export
+#'
+#' @importFrom knitr kable
+#' @importFrom kableExtra kable_styling %>%
+#'
+print.Rttest <- function(RttestObj) {
+
+  #though it shouldn't ever happen, the method confirms that an Rttest object is given as the argument
+  if(class(RttestObj) != "Rttest") {
+    stop(paste0("The input is of the wrong class!"))
+  }
+
+  #generating table kable styled
+  kable(RttestObj$data) %>%
+    kable_styling(latex_options = "striped")
+}
+
+```
+
+
+
+
 ##Testing constr
 
 ```{r}
