@@ -96,9 +96,3 @@ obj <- myconstr(x=x, y=y, alpha=alpha)
 class(obj)
 print(obj)
 
-
-#this can handle errors
-#library(purrr)
-#safeConstr <- safely(myconstr)
-#safeConstr
-
