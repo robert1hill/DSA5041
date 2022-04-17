@@ -83,6 +83,37 @@ print.Rttest <- function(x, ...) {
 }
 
 
+#' @title A plot method for Rttest objects
+#'
+#' @description This function plots the data that was supplied when creating a Rttest object. The plot is of two boxplots.
+#'
+#'
+#' @param x #An object of class Rttest. This is a list with data, confidence interval, and pvalue
+#' @param ... #any additional arguments to the plot function.
+#'
+#' @return Side-by-side boxplots that show the data distribution of all supplied populations.
+#'
+#' @importFrom ggplot2 ggplot geom_boxplot aes labs
+#' @export
+#'
+#' @example
+#' \dontrun{
+#' plot(obj)}
+#'
+plot.Rttest <- function(x, ...) {
+
+  #though it shouldn't ever happen, the method confirms that an Rttest object is given as the argument
+  stopifnot(class(x) == "Rttest")
+
+  #generating table kable styled
+  plotIt <- ggplot(x$data, aes(x=x$data[,2],y=x$data[,1],fill=x$data[,2])) +
+    geom_boxplot() +
+    labs(x="Population", y="Values")
+
+  plotIt
+
+}
+
 
 #testing myconstr
 
@@ -95,4 +126,6 @@ alpha <- 0.05
 obj <- myconstr(x=x, y=y, alpha=alpha)
 class(obj)
 print(obj)
+
+plot(obj)
 

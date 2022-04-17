@@ -41,7 +41,7 @@ There are two forms of documentation
 
 The first function is `myconstr`. It runs a t-test and produces a list of useful information, including the population data, confidence interval, and the p-value.
 
-```{r}
+```{r, eval=FALSE}
 myconstr=function(x, y, alpha=0.05){
 
   ###conditionals to check arguments
@@ -85,6 +85,7 @@ myconstr=function(x, y, alpha=0.05){
 Below is an example of the `myconstr` function running:
 
 ```{r}
+library(DSA5041PROJ1)
 set.seed(21)
 x <- rnorm(30,5,2)
 set.seed(23)
@@ -98,29 +99,62 @@ class(obj)
 
 Notice that the output is of class "Rttest"
 
-The function returns a list of components:
-
-```{r}
-obj
-```
-
 The components can then be operated on by an appropriate method attached to a generic.
 
-# Method
+# Methods
 
-The method is attached to the generic finction `plot()`
+## Print
+
+This method is attached to the generic function `print()`. It generates a formatted table of the input data with a note at the bottom that shows the confidence interval and the p-value.
 
 ```{r, eval=FALSE}
-#plot.mytt()
+print.Rttest <- function(x, ...) {
+
+  #though it shouldn't ever happen, the method confirms that an Rttest object is given as the argument
+  stopifnot(class(x) == "Rttest")
+
+  #generating table kable styled
+  printTable <- kable(x$data, caption = "Input Data") %>%
+    kable_styling("hover", full_width = F) %>%
+    footnote(general = paste("Confidence Interval: ", x$ConfidenceInt, '\n',
+                             "p-value: ", x$pvalue))
+  printTable
+
+}
 ```
 
+We can call it by simply invoking the `print()` function
 
+```{r}
+print(obj)
+```
+
+## Plot
+
+This method is attached to the generic function `plot()`. It generates side-by-side boxplots of the data for each population.
+
+```{r, eval=FALSE}
+plot.Rttest <- function(x, ...) {
+
+  #though it shouldn't ever happen, the method confirms that an Rttest object is given as the argument
+  stopifnot(class(x) == "Rttest")
+
+  #generating table kable styled
+  plotIt <- ggplot(x$data, aes(x=x$data[,2],y=x$data[,1],fill=x$data[,2])) +
+    geom_boxplot() +
+    labs(x="Population", y="Values")
+
+  plotIt
+
+}
+```
 
 We can call it by simply invoking the `plot()` function
 
 ```{r}
-#plot(out)
+plot(obj)
 ```
+
 
 
 
