@@ -39,7 +39,7 @@ There are two forms of documentation
   
 # Constructor
 
-The first function is `myconstr`. It runs a t-test and produces a list of useful information, including the population data, confidence interval, and the p-value.
+The first function is `myttest`. It runs a t-test and produces a list of useful information, including the population data, confidence interval, and the p-value.
 
 ```{r, eval=FALSE}
 myconstr=function(x, y, alpha=0.05){
@@ -82,7 +82,7 @@ myconstr=function(x, y, alpha=0.05){
 }
 ```
 
-Below is an example of the `myconstr` function running:
+Below is an example of the `myttest` function running:
 
 ```{r}
 library(DSA5041PROJ1)
@@ -92,7 +92,7 @@ set.seed(23)
 y <- rnorm(30,3,2)
 alpha <- 0.05
 
-obj <- myconstr(x=x, y=y, alpha=alpha)
+obj <- myttest(x=x, y=y, paired=F, alpha=alpha)
 class(obj)
 
 ```

@@ -1,21 +1,25 @@
 #' @title A constructor function for t tests
 #'
-#' @description This function takes in two vectors of data and an alpha value, and
-#' it provides the confidence interval and p-value from a standard t-test.
-#' NOTE: as the function is now, it assumes the variances of the two vectors of data are the same.
+#' @description This function takes in two vectors of data, true/false of whether the data is paired, and an alpha value for the acceptable error
+#' It provides the confidence interval and p-value from a standard t-test.
 #'
 #' @param x #vector of data
 #' @param y #vector of data
+#' @param paired #a boolean that shows whether the supplied data is paired. This value defaults to false.
 #' @param alpha #the alpha, a value between 0-1
 #'
 #' @return A named list with a dataframe of the data, confidence interval, and p-value
+#' @export myttest
+#'
 #' @export
 #'
 #' @importFrom stats  t.test
+#' @importFrom rlang call2
+#' @importFrom stats var.test
 #'
 #' @examples
 #'x <- rnorm(30,5,2); y <- rnorm(30,3,2)
-myconstr=function(x, y, alpha=0.05){
+myttest=function(x, y, paired=FALSE, alpha=0.05){
 
   ###conditionals to check arguments
   #confirming x is a numeric vector
@@ -26,7 +30,12 @@ myconstr=function(x, y, alpha=0.05){
   #confirming y is a numeric vector
   yClass = class(y)
   if(yClass != "numeric") {
-    stop(paste0("The input y is of class ", xClass, " but must be a vector!!"))
+    stop(paste0("The input y is of class ", yClass, " but must be a vector!!"))
+  }
+  #confirming paired is a boolean
+  pClass = class(paired)
+  if(pClass != "logical") {
+    stop(paste0("The input paired is of class ", pClass, " but must be either TRUE or FALSE!!"))
   }
   #confirming alpha is between 0-1
   if(alpha < 0 || alpha > 1) {
@@ -34,6 +43,7 @@ myconstr=function(x, y, alpha=0.05){
   }
 
 
+  ####Building out the dataframe
   #declaring vectors for data and the source "v". Code from the example.
   data <- vector(mode = "numeric", length = length(x) + length(y))
   v <- vector(mode = "list", length = length(data))
@@ -43,28 +53,63 @@ myconstr=function(x, y, alpha=0.05){
   v <- rep(c("x","y"), c(length(x),length(y)))
   df = data.frame("data" = data, "v" = v)
 
-  #running ttest
 
-  tt<-t.test(x,y,var.equal = TRUE, conf.level=1-alpha)
+  ####Checking sample varience to determine which type of ttest to run
+  #Once checked, the ttest is run.
 
+  tTestType <- ''
+  tt <- ''
+
+  if(paired) {
+    tTestType <- "Paired"
+    tt<-t.test(x,y,mu=0, paired = TRUE)
+  }
+  else {
+
+    #testing the variances. If the pvalue is > than alpha, then we assume they are equal.
+    varTest <- var.test(x,y)
+    varEqual <- varTest$p.value > alpha
+
+    #if var is equal
+    if(varEqual){
+      tTestType <- "T-test"
+      tt<-t.test(x,y,var.equal = TRUE)#,conf.level=1-alpha)
+    }
+
+    #if var is not equal
+    else {
+      tTestType <- "Welch"
+      tt<-t.test(x,y,var.equal = FALSE)#,conf.level=1-alpha)
+    }
+  }
+
+
+  #based on the ttest p-value, we accept or reject the Null
+  result = 'N'
+  if(tt$p.value < alpha) {
+    result = 'Y'
+  }
 
   #returning a list
-  returnObject = list('data' = df, 'alpha' = alpha, 'ConfidenceInt' = 1-alpha, 'pvalue'=tt$p.value)
+  returnObject = list('testType' = tTestType,
+                      'result' = result,
+                      'statistics' = tt,
+                      'data' = df,
+                      'pvalue'=tt$p.value)
   class(returnObject) = "Rttest"
   returnObject
 }
 
 #' @title A print method for Rttest objects
 #'
-#' @description This function prints a Rttest object.
+#' @description This function prints the confidence interval for an Rttest object.
 #'
 #' @param x #An object of class Rttest. This is a list with data, confidence interval, and pvalue
 #' @param ... #allows the function to work if more than one argument is submitted.
 #'
-#' @return A formatted table of the input data with a note at the bottom with the confidence interval and the p-value
+#' @return A string that has the confidence interval for the provided alpha.
 #'
-#' @importFrom knitr kable
-#' @importFrom kableExtra kable_styling %>% footnote
+#' @export print.Rttest
 #' @export
 #'
 #'
@@ -74,11 +119,9 @@ print.Rttest <- function(x, ...) {
   stopifnot(class(x) == "Rttest")
 
   #generating table kable styled
-  printTable <- kable(x$data, caption = "Input Data") %>%
-    kable_styling("hover", full_width = F) %>%
-    footnote(general = paste("Confidence Interval: ", x$ConfidenceInt, '\n',
-                             "p-value: ", x$pvalue))
-  printTable
+  output <- paste("The confidence interval for the difference between the sample means is: ",
+        x$statistics['conf.int'])
+  output
 
 }
 
@@ -94,6 +137,8 @@ print.Rttest <- function(x, ...) {
 #' @return Side-by-side boxplots that show the data distribution of all supplied populations.
 #'
 #' @importFrom ggplot2 ggplot geom_boxplot aes labs
+#' @export plot.Rttest
+#'
 #' @export
 #'
 #' @example
@@ -122,8 +167,11 @@ x <- rnorm(30,5,2)
 set.seed(23)
 y <- rnorm(30,3,2)
 alpha <- 0.05
-
-obj <- myconstr(x=x, y=y, alpha=alpha)
+library(rlang)
+tt <- t.test(x,y,var.equal = TRUE)
+tt$conf.int
+unlist(attributes(tt$conf.int))
+obj <- myttest(x=x, y=y, alpha=alpha)
 class(obj)
 print(obj)
 
