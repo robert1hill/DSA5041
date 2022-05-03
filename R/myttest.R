@@ -19,6 +19,7 @@
 #'
 #' @examples
 #'x <- rnorm(30,5,2); y <- rnorm(30,3,2)
+#'obj <- myttest(x=l1, y=l2, paired=F, alpha=0.05)
 myttest=function(x, y, paired=FALSE, alpha=0.05){
 
   ###conditionals to check arguments
