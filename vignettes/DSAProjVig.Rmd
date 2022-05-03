@@ -22,7 +22,9 @@ The package `DSA5041PROJ1` runs the Student's T-Test on two populations to deter
 
 # Functions
 
-TODO: Explain all functions once they are created.
+`myttest` takes in two populations of data, whether the populations are paired, and an alpha value (measure of error). The function then runs the appropriate form of the T-Test and returns all relevant information in an Rttest object.
+`Rttest.print` is the generic print function for Rttest objects. This function prints the confidence interval of the T-Test.
+`Rttest.plot` is the generic plot function for Rttest objects. This function plots one or two boxplots, depending on whether the data is paired. If the data is paired, the confidence interval is shown as well.
 
 ## OOP
 
@@ -39,10 +41,10 @@ There are two forms of documentation
   
 # Constructor
 
-The first function is `myttest`. It runs a t-test and produces a list of useful information, including the population data, confidence interval, and the p-value.
+The first function is `myttest`. It runs a t-test and produces a list of useful information, including the population data, type of T-Test used, and the p-value.
 
 ```{r, eval=FALSE}
-myconstr=function(x, y, alpha=0.05){
+myttest=function(x, y, paired=FALSE, alpha=0.05){
 
   ###conditionals to check arguments
   #confirming x is a numeric vector
@@ -53,7 +55,12 @@ myconstr=function(x, y, alpha=0.05){
   #confirming y is a numeric vector
   yClass = class(y)
   if(yClass != "numeric") {
-    stop(paste0("The input y is of class ", xClass, " but must be a vector!!"))
+    stop(paste0("The input y is of class ", yClass, " but must be a vector!!"))
+  }
+  #confirming paired is a boolean
+  pClass = class(paired)
+  if(pClass != "logical") {
+    stop(paste0("The input paired is of class ", pClass, " but must be either TRUE or FALSE!!"))
   }
   #confirming alpha is between 0-1
   if(alpha < 0 || alpha > 1) {
@@ -61,6 +68,7 @@ myconstr=function(x, y, alpha=0.05){
   }
 
 
+  ####Building out the dataframe
   #declaring vectors for data and the source "v". Code from the example.
   data <- vector(mode = "numeric", length = length(x) + length(y))
   v <- vector(mode = "list", length = length(data))
@@ -70,13 +78,49 @@ myconstr=function(x, y, alpha=0.05){
   v <- rep(c("x","y"), c(length(x),length(y)))
   df = data.frame("data" = data, "v" = v)
 
-  #running ttest
 
-  tt<-t.test(x,y,var.equal = TRUE, conf.level=1-alpha)
+  ####Checking sample varience to determine which type of ttest to run
+  #Once checked, the ttest is run.
 
+  tTestType <- ''
+  tt <- ''
+
+  if(paired) {
+    tTestType <- "Paired"
+    tt<-t.test(x,y,mu=0, paired = TRUE)
+  }
+  else {
+
+    #testing the variances. If the pvalue is > than alpha, then we assume they are equal.
+    varTest <- var.test(x,y)
+    varEqual <- varTest$p.value > alpha
+
+    #if var is equal
+    if(varEqual){
+      tTestType <- "T-test"
+      tt<-t.test(x,y,var.equal = TRUE)#,conf.level=1-alpha)
+    }
+
+    #if var is not equal
+    else {
+      tTestType <- "Welch"
+      tt<-t.test(x,y,var.equal = FALSE)#,conf.level=1-alpha)
+    }
+  }
+
+
+  #based on the ttest p-value, we accept or reject the Null
+  result = 'N'
+  if(tt$p.value < alpha) {
+    result = 'Y'
+  }
 
   #returning a list
-  returnObject = list('data' = df, 'alpha' = alpha, 'ConfidenceInt' = 1-alpha, 'pvalue'=tt$p.value)
+  returnObject = list('testType' = tTestType,
+                      'result' = result,
+                      'statistics' = tt,
+                      'data' = df,
+                      'pvalue'=tt$p.value)
   class(returnObject) = "Rttest"
   returnObject
 }
@@ -99,13 +143,24 @@ class(obj)
 
 Notice that the output is of class "Rttest"
 
+The Rttest object is a list of relevant information:
+
+```{r}
+obj$testType
+obj$result
+obj$statistics
+obj$data
+obj$pvalue
+
+```
+
 The components can then be operated on by an appropriate method attached to a generic.
 
 # Methods
 
 ## Print
 
-This method is attached to the generic function `print()`. It generates a formatted table of the input data with a note at the bottom that shows the confidence interval and the p-value.
+This method is attached to the generic function `print()`. This function prints the confidence interval for an Rttest object.
 
 ```{r, eval=FALSE}
 print.Rttest <- function(x, ...) {
@@ -114,11 +169,9 @@ print.Rttest <- function(x, ...) {
   stopifnot(class(x) == "Rttest")
 
   #generating table kable styled
-  printTable <- kable(x$data, caption = "Input Data") %>%
-    kable_styling("hover", full_width = F) %>%
-    footnote(general = paste("Confidence Interval: ", x$ConfidenceInt, '\n',
-                             "p-value: ", x$pvalue))
-  printTable
+  output <- paste("The confidence interval for the difference between the sample means is: ",
+        x$statistics['conf.int'])
+  output
 
 }
 ```
@@ -131,7 +184,7 @@ print(obj)
 
 ## Plot
 
-This method is attached to the generic function `plot()`. It generates side-by-side boxplots of the data for each population.
+This method is attached to the generic function `plot()`. This function plots the data that was supplied when creating a Rttest object, if the data is non-paired. The plot is of two boxplots. However, if the data is paired, one boxplot of the difference of data is shown, with the confidence interval overlayed in yellow.
 
 ```{r, eval=FALSE}
 plot.Rttest <- function(x, ...) {
@@ -139,10 +192,27 @@ plot.Rttest <- function(x, ...) {
   #though it shouldn't ever happen, the method confirms that an Rttest object is given as the argument
   stopifnot(class(x) == "Rttest")
 
-  #generating table kable styled
-  plotIt <- ggplot(x$data, aes(x=x$data[,2],y=x$data[,1],fill=x$data[,2])) +
-    geom_boxplot() +
-    labs(x="Population", y="Values")
+  plotIt <- ''
+
+  #checking to see if the ttest was paired
+  if(x$testType == "Paired") {
+
+    #since it's paired, we take the difference between the samples
+    dataDiff <- x$data[x$data[,2]=='x',1] - x$data[x$data[,2]=='y',1]
+
+    #and plot it as a boxplot
+    plotIt <- ggplot(x$data[x$data[,2]=='x',], aes(x=rep("x",length(dataDiff)),y=dataDiff)) +
+      geom_boxplot() +
+      geom_errorbar(aes(ymin=x$statistics$conf.int[1],ymax=x$statistics$conf.int[2]), color="yellow", size=1) +
+      labs(x="Values", y="Difference between paired samples")
+  }
+  else {
+
+    #generating boxplots
+    plotIt <- ggplot(x$data, aes(x=x$data[,2],y=x$data[,1],fill=x$data[,2])) +
+      geom_boxplot() +
+      labs(x="Population", y="Values")
+  }
 
   plotIt
 
