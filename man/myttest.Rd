@@ -20,7 +20,7 @@ A named list with a dataframe of the data, confidence interval, and p-value
 }
 \description{
 This function takes in two vectors of data, true/false of whether the data is paired, and an alpha value for the acceptable error
-It provides the confidence interval and p-value from a standard t-test.
+It provides the confidence interval and p-value from a t-test.
 }
 \examples{
 x <- rnorm(30,5,2); y <- rnorm(30,3,2)

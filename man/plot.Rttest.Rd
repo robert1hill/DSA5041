@@ -7,13 +7,13 @@
 \method{plot}{Rttest}(x, ...)
 }
 \arguments{
-\item{x}{#An object of class Rttest. This is a list with data, confidence interval, and pvalue}
+\item{x}{#An object of class Rttest. This is a list.}
 
 \item{...}{#any additional arguments to the plot function.}
 }
 \value{
-Side-by-side boxplots that show the data distribution of all supplied populations.
+Side-by-side boxplots that show the data distribution of the supplied populations or a single boxplot of the difference of the data, depending on whether the data is paired.
 }
 \description{
-This function plots the data that was supplied when creating a Rttest object. The plot is of two boxplots.
+This function plots the data that was supplied when creating a Rttest object, if the data is non-paired. The plot is of two boxplots. However, if the data is paired, one boxplot of the difference of data is shown.
 }

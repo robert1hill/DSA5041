@@ -1,7 +1,7 @@
 #' @title A constructor function for t tests
 #'
 #' @description This function takes in two vectors of data, true/false of whether the data is paired, and an alpha value for the acceptable error
-#' It provides the confidence interval and p-value from a standard t-test.
+#' It provides the confidence interval and p-value from a t-test.
 #'
 #' @param x #vector of data
 #' @param y #vector of data
@@ -128,15 +128,15 @@ print.Rttest <- function(x, ...) {
 
 #' @title A plot method for Rttest objects
 #'
-#' @description This function plots the data that was supplied when creating a Rttest object. The plot is of two boxplots.
+#' @description This function plots the data that was supplied when creating a Rttest object, if the data is non-paired. The plot is of two boxplots. However, if the data is paired, one boxplot of the difference of data is shown.
 #'
 #'
-#' @param x #An object of class Rttest. This is a list with data, confidence interval, and pvalue
+#' @param x #An object of class Rttest. This is a list.
 #' @param ... #any additional arguments to the plot function.
 #'
-#' @return Side-by-side boxplots that show the data distribution of all supplied populations.
+#' @return Side-by-side boxplots that show the data distribution of the supplied populations or a single boxplot of the difference of the data, depending on whether the data is paired.
 #'
-#' @importFrom ggplot2 ggplot geom_boxplot aes labs
+#' @importFrom ggplot2 ggplot geom_boxplot aes labs geom_errorbar
 #' @export plot.Rttest
 #'
 #' @export
@@ -150,30 +150,32 @@ plot.Rttest <- function(x, ...) {
   #though it shouldn't ever happen, the method confirms that an Rttest object is given as the argument
   stopifnot(class(x) == "Rttest")
 
-  #generating table kable styled
-  plotIt <- ggplot(x$data, aes(x=x$data[,2],y=x$data[,1],fill=x$data[,2])) +
-    geom_boxplot() +
-    labs(x="Population", y="Values")
+  plotIt <- ''
+
+  #checking to see if the ttest was paired
+  if(x$testType == "Paired") {
+
+    #since it's paired, we take the difference between the samples
+    dataDiff <- x$data[x$data[,2]=='x',1] - x$data[x$data[,2]=='y',1]
+
+    #and plot it as a boxplot
+    plotIt <- ggplot(x$data[x$data[,2]=='x',], aes(x=rep("x",length(dataDiff)),y=dataDiff)) +
+      geom_boxplot() +
+      geom_errorbar(aes(ymin=x$statistics$conf.int[1],ymax=x$statistics$conf.int[2]), color="yellow", size=1) +
+      labs(x="Values", y="Difference between paired samples")
+  }
+  else {
+
+    #generating boxplots
+    plotIt <- ggplot(x$data, aes(x=x$data[,2],y=x$data[,1],fill=x$data[,2])) +
+      geom_boxplot() +
+      labs(x="Population", y="Values")
+  }
 
   plotIt
 
 }
 
 
-#testing myconstr
 
-set.seed(21)
-x <- rnorm(30,5,2)
-set.seed(23)
-y <- rnorm(30,3,2)
-alpha <- 0.05
-library(rlang)
-tt <- t.test(x,y,var.equal = TRUE)
-tt$conf.int
-unlist(attributes(tt$conf.int))
-obj <- myttest(x=x, y=y, alpha=alpha)
-class(obj)
-print(obj)
-
-plot(obj)
 
