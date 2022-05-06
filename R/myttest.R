@@ -19,7 +19,7 @@
 #'
 #' @examples
 #'x <- rnorm(30,5,2); y <- rnorm(30,3,2)
-#'obj <- myttest(x=l1, y=l2, paired=F, alpha=0.05)
+#'obj <- myttest(x=x, y=y, paired=FALSE, alpha=0.05)
 myttest=function(x, y, paired=FALSE, alpha=0.05){
 
   ###conditionals to check arguments
@@ -137,7 +137,7 @@ print.Rttest <- function(x, ...) {
 #'
 #' @return Side-by-side boxplots that show the data distribution of the supplied populations or a single boxplot of the difference of the data, depending on whether the data is paired.
 #'
-#' @importFrom ggplot2 ggplot geom_boxplot aes labs geom_errorbar
+#' @importFrom ggplot2 ggplot geom_boxplot aes labs geom_errorbar ggtitle
 #' @export plot.Rttest
 #'
 #' @export
@@ -163,14 +163,16 @@ plot.Rttest <- function(x, ...) {
     plotIt <- ggplot(x$data[x$data[,2]=='x',], aes(x=rep("x",length(dataDiff)),y=dataDiff)) +
       geom_boxplot() +
       geom_errorbar(aes(ymin=x$statistics$conf.int[1],ymax=x$statistics$conf.int[2]), color="yellow", size=1) +
-      labs(x="Values", y="Difference between paired samples")
+      labs(x="Values", y="Difference between paired samples") +
+      ggtitle(paste(x$testType, " with a p-value of ", round(x$pvalue,3)))
   }
   else {
 
     #generating boxplots
     plotIt <- ggplot(x$data, aes(x=x$data[,2],y=x$data[,1],fill=x$data[,2])) +
       geom_boxplot() +
-      labs(x="Population", y="Values")
+      labs(x="Population", y="Values") +
+      ggtitle(paste(x$testType, " with a p-value of ", round(x$pvalue,3)))
   }
 
   plotIt

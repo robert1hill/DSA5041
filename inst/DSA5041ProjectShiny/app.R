@@ -10,7 +10,9 @@
 library(shiny)
 
 # Define UI for application that draws a histogram
-ui <- fluidPage(
+ui <- verticalLayout( # object 1,
+        # object 2,
+        # object 3
 
     # Application title
     titlePanel("T-Test Calculator - DSA 5041 Project - Robert Hill"),
@@ -41,37 +43,41 @@ ui <- fluidPage(
     fluidRow(column(9, verbatimTextOutput("alpha"))),
 
     # Show a plot of the generated distribution
-    mainPanel(
-       textOutput("testType"),
-       plotOutput("distPlot")
-    )
+
+    textOutput("testType"),
+
+    plotOutput("distPlot")
+
 )
 
 
 # Define server logic required to draw a histogram
-server <- function(input, output) {
+server <- shinyServer(function(input, output) {
 
     library(DSA5041PROJ1)
 
     # Generating the data based on inputs
     response <- reactive({
+        set.seed(33)
         x <- rnorm(100,mean=input$num1,sd=input$num2)
+        set.seed(32)
         y <- rnorm(100,mean=input$num3,sd=input$num4)
 
         #Running package function
         #obj <- myttest(x,y,paired=input$checkbox,alpha=input$num5)
-        list(x=x,y=y,alpha=input$num5)
+        #list(x=x,y=y,alpha=input$num5)
 
+        obj <- myttest(x,y,alpha=input$num5,paired=FALSE)
+
+        list(obj=obj)
     })
-
 
     output$distPlot <- renderPlot({
-        obj <- myttest(response()$x,response()$y,alpha=response()$alpha,paired=F)
-        plot(obj)
+        plot(response()$obj)
 
     })
 
-}
+})
 
 # Run the application
 shinyApp(ui = ui, server = server)

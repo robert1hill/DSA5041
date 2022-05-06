@@ -24,4 +24,5 @@ It provides the confidence interval and p-value from a t-test.
 }
 \examples{
 x <- rnorm(30,5,2); y <- rnorm(30,3,2)
+obj <- myttest(x=x, y=y, paired=FALSE, alpha=0.05)
 }
